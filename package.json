@@ -4,14 +4,17 @@
   "description": "simple file upload server",
   "main": "src/server.js",
   "scripts": {
-    "start": "clear && node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "clear && node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "commander": "^9.3.0",
     "cors": "^2.8.5",
     "express": "^4.18.1",
-    "multer": "^1.4.4"
+    "fluent-ffmpeg": "^2.1.2",
+    "multer": "^1.4.4",
+    "uuid": "^8.3.2"
   }
 }

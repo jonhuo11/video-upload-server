@@ -6,16 +6,21 @@ const cors = require("cors");
 
 const server = express();
 
+const logfile = "logs.txt";
 const filetypes = [".mp4", ".mov"];
 
+const log = (msg) => {
+    fs.appendFileSync(logfile, `${msg}\n`);
+};
+
 const logger = (req, res, next) => {
-    console.log(`${req.method} at ${req.path}`);
+    log(`${req.method} at ${req.path}`);
     next();
 };
 
 const storage = multer.diskStorage({
     destination : (req, file, cb) => {
-        cb(null, "./videos");
+        cb(null, "./videos"); // TODO: use path to make platform independent paths
     },
     filename : (req, file, cb) => {
         cb(null, `${path.parse(file.originalname).name}${path.extname(file.originalname)}`);
@@ -27,7 +32,7 @@ const upload = multer({
         //console.log("filtering");
         const ext = path.extname(file.originalname);
         if (!filetypes.includes(ext)) {
-            console.log("bad extension, file must be .mp4 or .mov");
+            log("bad extension, file must be .mp4 or .mov");
             cb(null, false);
         } else {
             cb(null, true);
@@ -37,6 +42,8 @@ const upload = multer({
 
 server.use(logger);
 server.use(cors());
+
+// ====== ROUTES ======
 
 server.get("/", (req, res) => {
     res.status(200).send("video-upload-server running");
@@ -50,10 +57,10 @@ server.post(
     upload.single("file"),
     (req,res) => {
         if (req.file === undefined) {
-            console.log("fileFilter rejected file");
+            log("fileFilter rejected file");
             res.status(400).send(`fileFilter rejected file, check extension types must be one of ${filetypes.join(", ")}`);
         } else {
-            console.log(`received ${req.file.originalname}`);
+            log(`received ${req.file.originalname}`);
             res.sendStatus(200);
         }
     }
@@ -63,9 +70,10 @@ server.post(
     returns a list of filenames under ./videos separated by newlines
 */
 server.get("/listvideos", (req,res)=> {
-    fs.readdir("./videos", (err, files) => {
+    fs.readdir("./videos", (err, files) => { // TODO: use path to make platform independent paths
         if (err) {
-            next(err);
+            log(err);
+            res.status(500).send("server error reading files");
         } else {
             var o = "";
             files.forEach(file => {
@@ -78,6 +86,10 @@ server.get("/listvideos", (req,res)=> {
     });
 });
 
+// ====== SETUP ======
+
 server.listen(2003, ()=>{
+    log(`\nServer started ${new Date().toISOString()}`)
     console.log("video-upload-server by Jonathan Huo\nserver now listening on port 2003");
+    console.log("logs under ./logs.txt")
 });
