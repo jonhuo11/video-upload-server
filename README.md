@@ -6,5 +6,6 @@ Send a POST request with multipart/form-data with key "file" mapped to video blo
 
 # hls.js
 
-Command line tool for converting files in `videos/` to http live streaming format
+Command line tool for converting files to http live streaming format
+
 Use `node hls.js` to run
