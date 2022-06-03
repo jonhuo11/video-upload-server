@@ -86,6 +86,35 @@ server.get("/listvideos", (req,res)=> {
     });
 });
 
+/*
+    returns a list of hls video ids under ./hls_videos separated by newlines
+*/
+server.get("/hls/list", (req, res) => {
+    fs.readdir("./hls_videos", {withFileTypes:true}, (err, files) => {
+        if (err) {
+            log(err);
+            res.status(500).send("server error reading files");
+        } else {
+            var o = {};
+            files.forEach(file => {
+                if (file.isDirectory()) {
+                    const content = fs.readFileSync(`./hls_videos/${file.name}/metadata.txt`);
+                    o[file.name] = content.toString();
+                }
+            });
+            res.status(200).type("application/json").send(o);
+        }
+    });
+});
+
+/*
+    returns a specific hls video m3u8 file
+*/
+server.get('/hls/:videoid', (req, res) => {
+    const vid = req.params.videoid;
+    res.sendFile(`./hls_videos/${vid}/output.m3u8`);
+});
+
 // ====== SETUP ======
 
 server.listen(2003, ()=>{
