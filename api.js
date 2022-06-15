@@ -8,7 +8,7 @@ const ffprobe = require("ffprobe");
 const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const path = require("path");
-const os = require("os");
+//const os = require("os");
 
 const makeHLS = (file, dest, prependVideoID=false) => {
 
@@ -87,12 +87,14 @@ const makeHLS = (file, dest, prependVideoID=false) => {
     cmd.run();
 }
 
-// currently only supports mac darwin for ffprobe. Can easily change this by placing the
-// os specific binary for ffprobe in the root folder
+// You can change the ffprobe binary by placing it in ./bin/
 const probeTSFiles = (folder, cb) => {
-    if (os.platform() != "darwin") {
-        console.log("ffprobe binary only supports darwin");
-        return;
+    try {
+        if (!fs.existsSync(path.join(__dirname, "bin", "ffprobe"))) {
+            return cb("no ffprobe binary found", {});
+        }
+    } catch (err) {
+        return cb(err, {});
     }
 
     fs.readdir(folder, {withFileTypes:true}, (err, files) => {
@@ -109,7 +111,7 @@ const probeTSFiles = (folder, cb) => {
         });
         files.forEach((file) => {if (file.name.endsWith(".ts")) {
                 var fp = path.join(folder, file.name);
-                ffprobe(fp, {path:path.join(__dirname, "ffprobe")}, (err, info) => {
+                ffprobe(fp, {path:path.join(__dirname, "bin", "ffprobe")}, (err, info) => {
                     if (err) {
                         return cb(err, {});
                     }
