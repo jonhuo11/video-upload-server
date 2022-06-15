@@ -1,3 +1,7 @@
+# installation
+
+Download the latest ffprobe binary and place in `./bin/` folder. Download here https://www.ffmpeg.org/download.html 
+
 # server.js
 
 Run the server on port 2003 using `npm start`
@@ -6,7 +10,7 @@ Send a POST request with multipart/form-data with key "file" mapped to video blo
 
 Supports http live streaming videos under ./hls_videos, try using https://hls-js.netlify.app/demo/ to test it.
 
-Currently only works on mac darwin (`ffprobe` binary and also file paths are hardcoded to be unix format)
+Only tested on mac
 
 # cli.js
 
