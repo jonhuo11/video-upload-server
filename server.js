@@ -112,7 +112,28 @@ server.get("/hls/list", (req, res) => {
 */
 server.get('/hls/:videoid', (req, res) => {
     const vid = req.params.videoid;
-    res.sendFile(`./hls_videos/${vid}/output.m3u8`);
+    const fp = path.join(__dirname, `/hls_videos/${vid}/output.m3u8`);
+    if (fs.existsSync(fp)) {
+        res.status(200).sendFile(fp);
+    } else {
+        res.status(400).send("no video with this id exists");
+    }
+});
+
+// returns a ts file
+server.get("/hls/:videoid/:tsfile", (req, res) => {
+    const vid = req.params.videoid;
+    const ts = req.params.tsfile;
+    const fp = path.join(__dirname, `hls_videos/${vid}/${ts}`);
+    if (fs.existsSync(fp)) {
+        res.status(200).sendFile(fp);
+    } else {
+        res.status(400).send("no ts file under this videoid with this name exists");
+    }
+});
+
+server.get("/hls/fragmentlengths/:videoid", (req, res) => {
+
 });
 
 // ====== SETUP ======

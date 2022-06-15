@@ -4,10 +4,12 @@ Run the server on port 2003 using `npm start`
 
 Send a POST request with multipart/form-data with key "file" mapped to video blob to serverurl:2003/upload to upload a video
 
-Currently only works on mac/linux
+Supports http live streaming videos under ./hls_videos, try using https://hls-js.netlify.app/demo/ to test it.
 
-# hls.js
+Currently only works on mac darwin (`ffprobe` binary and also file paths are hardcoded to be unix format)
 
-Command line tool for converting files to http live streaming format
+# cli.js
 
-Use `node hls.js` to run
+Command line tool for converting files to http live streaming format and some other tools.
+
+Use `node cli.js` to run. Use flag -p to set up the urls for HLS.
