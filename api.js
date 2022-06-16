@@ -103,23 +103,33 @@ const probeTSFiles = (folder, cb) => {
         }
 
         var data = {};
+        var flag = false;
         var total = 0;
         files.forEach((file) => {
             if (file.name.endsWith(".ts")) { // for all ts files...
                 total++;
             }
         });
-        files.forEach((file) => {if (file.name.endsWith(".ts")) {
+        files.forEach((file) => {
+            if (file.name.endsWith(".ts")) {
                 var fp = path.join(folder, file.name);
                 ffprobe(fp, {path:path.join(__dirname, "bin", "ffprobe")}, (err, info) => {
                     if (err) {
-                        return cb(err, {});
+                        if (!flag) {
+                            flag = true;
+                            return cb(err, {});
+                        }
+                        return;
                     }
                     data[file.name] = info;
                     total--;
 
                     if (total <= 0) { // all data callbacks are complete
-                        return cb(null, data);
+                        if (!flag) {
+                            flag = true;
+                            return cb(null, data);
+                        }
+                        return;
                     }
                 });
             }
