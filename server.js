@@ -3,6 +3,7 @@ const fs = require("fs");
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
+const { probeTSFiles } = require("./api");
 
 const server = express();
 
@@ -107,6 +108,26 @@ server.get("/hls/list", (req, res) => {
     });
 });
 
+server.get("/hls/fraglengths/:videoid", (req, res) => {
+    const vid = req.params.videoid;
+    probeTSFiles(path.join(__dirname, "hls_videos", vid), (err, data) => {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            try {
+                var o = {};
+                for (var key in data) {
+                    var duration = data[key].streams[0].duration;
+                    o[key] = {"duration" : duration};
+                }
+                res.status(200).type("application/json").send(o);
+            } catch (err) {
+                res.status(500).send(err);
+            }
+        }
+    })
+});
+
 /*
     returns a specific hls video m3u8 file
 */
@@ -130,10 +151,6 @@ server.get("/hls/:videoid/:tsfile", (req, res) => {
     } else {
         res.status(400).send("no ts file under this videoid with this name exists");
     }
-});
-
-server.get("/hls/fragmentlengths/:videoid", (req, res) => {
-
 });
 
 // ====== SETUP ======
